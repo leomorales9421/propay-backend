@@ -1,0 +1,7 @@
+{
+  "validation": {
+    "isNotEmpty": "El campo {{property}} no puede estar vacío.",
+    "isEmail": "El campo {{property}} debe ser un correo electrónico válido.",
+    "minLength": "El campo {{property}} debe tener al menos {{constraints.0}} caracteres."
+  }
+}
