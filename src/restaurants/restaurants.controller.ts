@@ -9,7 +9,7 @@ import { Express } from 'express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
-
+import { ResponseDto } from 'src/common/dto/response.dto';
 @UseGuards(JwtAuthGuard)
 @Controller('restaurants')
 export class RestaurantsController {
@@ -35,20 +35,28 @@ export class RestaurantsController {
     }),
   )
   async create(@Body() createRestaurantDto: CreateRestaurantDto, @UploadedFile() image: Express.Multer.File,) {
-    if (!image) {
-      throw new BadRequestException('La imagen es requerida');
+    try {
+      if (!image) {
+        throw new BadRequestException('La imagen es requerida');
+      }
+      const restaurant = await this.restaurantsService.create(createRestaurantDto, image.filename);
+      return ResponseDto.success(restaurant, "Restaurante creado correctamente");
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      return ResponseDto.error(error.message, null, 500);
     }
-    return this.restaurantsService.create(createRestaurantDto, image.filename);
   }
 
   @Get()
   findAll() {
-    return this.restaurantsService.findAll();
+    return ResponseDto.success(this.restaurantsService.findAll(), "Restaurantes encontrados correctamente");
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.restaurantsService.findOne(+id);
+    return ResponseDto.success(this.restaurantsService.findOne(id), "Restaurante encontrado correctamente");
   }
 
   @Patch(':id')
@@ -75,26 +83,33 @@ export class RestaurantsController {
     @Body() body: any,
     @UploadedFile() image: Express.Multer.File,
   ) {
-    const updateRestaurantDto = plainToInstance(UpdateRestaurantDto, body, {
-      enableImplicitConversion: true,
-      groups: ['update'],
-    });
+    try {
+      const updateRestaurantDto = plainToInstance(UpdateRestaurantDto, body, {
+        enableImplicitConversion: true,
+        groups: ['update'],
+      });
 
-    const errors = await validate(updateRestaurantDto, {
-      groups: ['update'],
-      whitelist: true,
-      forbidNonWhitelisted: true,
-    });
+      const errors = await validate(updateRestaurantDto, {
+        groups: ['update'],
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      });
 
-    if (errors.length > 0) {
-      throw new BadRequestException(errors);
+      const updatedRestaurant = await this.restaurantsService.update(id, updateRestaurantDto, image?.filename);
+      return ResponseDto.success(updatedRestaurant, "Restaurante actualizado correctamente");
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      return ResponseDto.error(error.message, null, 500);
     }
-    return this.restaurantsService.update(id, updateRestaurantDto, image?.filename);
   }
 
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.restaurantsService.remove(+id);
+    this.restaurantsService.remove(id);
+
+    return ResponseDto.success([], "Restaurante eliminado correctamente");
   }
 }

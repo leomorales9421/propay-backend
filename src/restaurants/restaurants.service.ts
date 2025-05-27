@@ -20,17 +20,27 @@ export class RestaurantsService {
             slug: slugify(dto.name, { lower: true }),
             image: imageFilename,
         });
-
         return await this.restaurantRepository.save(restaurant);
     }
 
-    findAll() {
-        return `This action returns all restaurants`;
+    async findAll() {
+        const restaurants = await this.restaurantRepository.find();
+        if (!restaurants || restaurants.length === 0) {
+            throw new NotFoundException('No se encontraron restaurantes');
+        }
+        return restaurants;
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} restaurant`;
+    async findOne(id: string) {
+        const restaurant = await this.restaurantRepository.findOne({ where: { id } });
+
+        if (!restaurant) {
+            throw new NotFoundException('Restaurante no encontrado');
+        }
+
+        return restaurant;
     }
+
     async update(id: string, dto: UpdateRestaurantDto, imageFilename?: string) {
         const restaurant = await this.restaurantRepository.findOne({ where: { id } });
 
@@ -58,7 +68,13 @@ export class RestaurantsService {
         return await this.restaurantRepository.save(restaurant);
     }
 
-    remove(id: number) {
-        return `This action removes a #${id} restaurant`;
+    async remove(id: string) {
+        const restaurant = await this.restaurantRepository.findOne({ where: { id } });
+
+        if (!restaurant) {
+            throw new NotFoundException('Restaurante no encontrado');
+        }
+
+        return this.restaurantRepository.remove(restaurant);
     }
 }

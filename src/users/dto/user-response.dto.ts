@@ -1,4 +1,4 @@
-// src/users/dto/user-response.dto.ts
+
 import { User } from '../entities/user.entity';
 
 export class UserResponseDto {
