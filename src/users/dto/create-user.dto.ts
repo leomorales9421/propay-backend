@@ -1,6 +1,7 @@
 import { IsString, IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 import { Match } from '../validations/match.decorator';
 import { IsEmailUnique } from '../validations/is-email-unique.validator';
+import { Role } from 'src/common/enums/role.enum';
 
 export class CreateUserDto {
   @IsEmail({}, { message: 'El email no es válido' })
@@ -35,4 +36,6 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'Repetir Contraseña es requerido' })
   @Match('password', { message: 'Las Contraseñas no Coinciden' })
   repeatPassword: string;
+
+  role?: Role;
 }

@@ -8,36 +8,47 @@ import { configuration } from './config/configuration';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RestaurantsModule } from './restaurants/restaurants.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { RolesGuard } from './common/guards/roles.guards';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot(<ConfigModuleOptions>{
-      isGlobal: true, // Disponible en todo el proyecto sin volver a importar
-      load: [configuration], // archivo de config que agrupa las variables
-    }),
-    // Conexión a MySQL
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule], // necesitamos acceso a las variables del .env
-      inject: [ConfigService], // inyectamos ConfigService para leerlas
-      useFactory: (configService: ConfigService) => {
-        const db = configService.get('database'); // Asegúrate de que 'database' esté correctamente definido
-        return {
-          type: 'mysql',
-          host: db?.host || 'localhost', // Valores predeterminados en caso de que falten
-          port: db?.port || 3306,
-          username: db?.username || 'root',
-          password: db?.password || '',
-          database: db?.name || 'test',
-          autoLoadEntities: true, // carga automática de entidades
-          synchronize: true, // solo para desarrollo (crea tablas automáticamente)
-        };
-      },
-    }),
-    UsersModule,
-    AuthModule,
-    RestaurantsModule,
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+    imports: [
+        ConfigModule.forRoot(<ConfigModuleOptions>{
+            isGlobal: true,
+            load: [configuration],
+        }),
+        TypeOrmModule.forRootAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService) => {
+                const db = configService.get('database');
+                return {
+                    type: 'mysql',
+                    host: db?.host || 'localhost',
+                    port: db?.port || 3306,
+                    username: db?.username || 'root',
+                    password: db?.password || '',
+                    database: db?.name || 'test',
+                    autoLoadEntities: true,
+                    synchronize: true,
+                };
+            },
+        }),
+        UsersModule,
+        AuthModule,
+        RestaurantsModule,
+    ],
+    controllers: [],
+    providers: [
+        {
+            provide: APP_GUARD,
+            useClass: JwtAuthGuard,
+        },
+        {
+            provide: APP_GUARD,
+            useClass: RolesGuard,
+        },
+    ],
 })
-export class AppModule {}
+export class AppModule { }

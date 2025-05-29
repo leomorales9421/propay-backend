@@ -1,28 +1,32 @@
+import { Role } from 'src/common/enums/role.enum';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: string; // UUID como string
+  id: string;
 
   @Column({ unique: true })
-  email: string; // Correo electrónico
+  email: string;
 
   @Column()
-  firstName: string; // Primer nombre
+  firstName: string;
 
   @Column()
-  lastName: string; // Apellido
+  lastName: string;
 
   @Column()
-  password: string; // Contraseña
+  password: string;
 
-  @Column({ default: false }) // Por defecto, 'verified' será false
-  verified: boolean; // Campo de verificación
-
-  @Column()
-  phone: string; // Teléfono
+  @Column({ default: false })
+  verified: boolean;
 
   @Column()
-  country: string; // País
+  phone: string;
+
+  @Column()
+  country: string;
+
+  @Column({ type: 'enum', enum: Role, default: Role.Customer })
+  role: Role;
 }
