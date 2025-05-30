@@ -22,8 +22,7 @@ export class AuthService {
 
     async login(email: string, password: string) {
         const user = await this.validateUser(email, password);
-
-        const payload = { sub: user.id, email: user.email };
+        const payload = { sub: user.id, email: user.email, role: user.role };
 
         const accessToken = this.jwtService.sign(payload, {
             secret: process.env.JWT_SECRET,
@@ -59,7 +58,7 @@ export class AuthService {
             if (!user) throw new UnauthorizedException('Usuario no encontrado');
 
             const newAccessToken = this.jwtService.sign(
-                { sub: user.id, email: user.email },
+                { sub: user.id, email: user.email, role: user.role },
                 {
                     secret: process.env.JWT_SECRET,
                     expiresIn: '15m',

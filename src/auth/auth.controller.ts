@@ -3,11 +3,13 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { ResponseDto } from 'src/common/dto/response.dto';
 import { UnauthorizedException } from '@nestjs/common';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService) { }
 
+    @Public()
     @Post('login')
     @HttpCode(200)
     async login(@Body() loginDto: LoginDto): Promise<ResponseDto<any>> {
@@ -15,6 +17,7 @@ export class AuthController {
         return ResponseDto.success(result, 'Inicio de sesión exitoso');
     }
 
+    @Public()
     @Post('refresh')
     @HttpCode(200)
     async refresh(@Headers('authorization') authHeader: string): Promise<ResponseDto<any>> {

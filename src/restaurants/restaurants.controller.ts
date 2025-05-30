@@ -10,6 +10,9 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { ResponseDto } from 'src/common/dto/response.dto';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Role } from 'src/common/enums/role.enum';
+@Roles(Role.Admin)
 @UseGuards(JwtAuthGuard)
 @Controller('restaurants')
 export class RestaurantsController {
@@ -51,13 +54,15 @@ export class RestaurantsController {
     }
 
     @Get()
-    findAll() {
-        return ResponseDto.success(this.restaurantsService.findAll(), "Restaurantes encontrados correctamente");
+    async findAll() {
+        const restaurants = await this.restaurantsService.findAll();
+        return ResponseDto.success(restaurants, "Restaurantes encontrados correctamente");
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        return ResponseDto.success(this.restaurantsService.findOne(id), "Restaurante encontrado correctamente");
+    async findOne(@Param('id') id: string) {
+        const restaurant = await this.restaurantsService.findOne(id);
+        return ResponseDto.success(restaurant, "Restaurante encontrado correctamente");
     }
 
     @Patch(':id')
