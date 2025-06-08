@@ -12,7 +12,7 @@ import { validate } from 'class-validator';
 import { ResponseDto } from 'src/common/dto/response.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
-@Roles(Role.Admin)
+@Roles(Role.Admin, Role.Customer)
 @UseGuards(JwtAuthGuard)
 @Controller('restaurants')
 export class RestaurantsController {
@@ -93,14 +93,20 @@ export class RestaurantsController {
         try {
             const updateRestaurantDto = plainToInstance(UpdateRestaurantDto, body, {
                 enableImplicitConversion: true,
-                groups: ['update'],
             });
 
             const errors = await validate(updateRestaurantDto, {
-                groups: ['update'],
                 whitelist: true,
                 forbidNonWhitelisted: true,
             });
+
+            if (errors.length > 0) {
+                const messages = errors
+                    .map(error => Object.values(error.constraints || {}))
+                    .flat();
+
+                throw new BadRequestException(messages);
+            }
 
             const updatedRestaurant = await this.restaurantsService.update(id, updateRestaurantDto, image?.filename);
             return ResponseDto.success(updatedRestaurant, "Restaurante actualizado correctamente");

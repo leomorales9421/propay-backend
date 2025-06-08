@@ -4,6 +4,7 @@ import {
     IsString,
     MaxLength,
     IsPhoneNumber,
+    Matches,
 } from 'class-validator';
 
 export class CreateRestaurantDto {
@@ -29,4 +30,15 @@ export class CreateRestaurantDto {
     @IsString({ message: 'El estado debe ser texto' })
     @MaxLength(299, { message: 'El estado no puede tener más de 299 caracteres' })
     state: string;
+    @IsDefined({ message: 'El campo "hour_open" es obligatorio' })
+    @IsNotEmpty({ message: 'La hora de apertura no debe estar vacía' })
+    @IsString({ message: 'La hora de apertura debe ser texto' })
+    @Matches(/^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/, { message: 'El campo "hour_open" debe tener el formato HH:mm:ss (ej: 14:00:00)' })
+    hour_open: string;
+
+    @IsDefined({ message: 'El campo "hour_close" es obligatorio' })
+    @IsNotEmpty({ message: 'La hora de cierre no debe estar vacía' })
+    @IsString({ message: 'La hora de cierre debe ser texto' })
+    @Matches(/^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/, { message: 'El campo "hour_close" debe tener el formato HH:mm:ss (ej: 14:00:00)' })
+    hour_close: string;
 }

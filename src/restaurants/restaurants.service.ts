@@ -63,6 +63,8 @@ export class RestaurantsService {
         if (dto.address !== undefined) restaurant.address = dto.address;
         if (dto.phone !== undefined) restaurant.phone = dto.phone;
         if (dto.state !== undefined) restaurant.state = dto.state;
+        if (dto.hour_open !== undefined) restaurant.hour_open = dto.hour_open;
+        if (dto.hour_close !== undefined) restaurant.hour_close = dto.hour_close;
         if (imageFilename) restaurant.image = imageFilename;
 
         return await this.restaurantRepository.save(restaurant);

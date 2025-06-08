@@ -11,6 +11,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guards';
+import { ProductsModule } from './products/products.module';
 
 @Module({
     imports: [
@@ -38,6 +39,7 @@ import { RolesGuard } from './common/guards/roles.guards';
         UsersModule,
         AuthModule,
         RestaurantsModule,
+        ProductsModule,
     ],
     controllers: [],
     providers: [

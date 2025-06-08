@@ -20,6 +20,12 @@ export class Restaurant {
     @Column({ length: 299 })
     state: string;
 
+    @Column({ type: 'time' })
+    hour_open: string;
+
+    @Column({ type: 'time' })
+    hour_close: string;
+
     @Column()
     image: string;
 }
